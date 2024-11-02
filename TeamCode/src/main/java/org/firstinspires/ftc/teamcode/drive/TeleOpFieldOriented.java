@@ -184,9 +184,6 @@ public class TeleOpFieldOriented extends LinearOpMode {
                 constants.collector.setPower(1.0);
                 constants.c_tilt.setTargetPosition(constants.collectorDown);
 //                constants.c_tilt.setPower(constants.c_tiltPower);
-                if (constants.cll.isPressed()) {
-                    constants.offset = constants.c_tilt.getCurrentPosition();
-                }
 //                if (constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {
 //                    constants.c_tilt.setPower(0.0);
 //                }
