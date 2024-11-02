@@ -185,10 +185,10 @@ public class Constants {
     boolean         delivery            = false;
     boolean         retracting          = false;
     int             counter             = 0;
-    int             collectorDown       = -225;
-    int             collectorStowed     = 100;
-    int             collectorUp         = 0;
-    int             slideDown           = 0;
+    int             collectorDown       = 460;
+    int             collectorMed        = 120;
+    int             collectorUp         = 20;
+    int             slideDown           = -200;
     int             highBasket          = -3750;
     int             lowBasket           = 500;
     int             highBar             = 1000;
@@ -197,7 +197,9 @@ public class Constants {
     boolean         START_LEFT;
     double          TURN_SPEED;
     double          DRIVE_SPEED;
-    double          overload            = 12.0;
+    double          collectorOverload   = 450;
+    double          c_tiltOverload      = 50000;
+
     double          c_tiltPower         = 0.1;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
@@ -247,6 +249,7 @@ public class Constants {
         hanger.setTargetPosition(0);
         hanger.setPower(0.5);
         hanger.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        hanger.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         c_tilt.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         c_tilt.setTargetPosition(0);

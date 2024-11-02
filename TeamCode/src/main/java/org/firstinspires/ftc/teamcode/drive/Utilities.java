@@ -126,10 +126,10 @@ public class Utilities extends LinearOpMode {
                 if (constants.cll.isPressed()) {
                     constants.offset = constants.c_tilt.getCurrentPosition();
                 }
-                if (constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {
+                if (constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS) > constants.c_tiltOverload) {
                     constants.c_tilt.setPower(0.0);
                 }
-                if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {// we have collected a sample
+                if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.collectorOverload) {// we have collected a sample
                     constants.collector.setPower(0.0);
                     constants.c_tilt.setTargetPosition(constants.collectorUp);
                     constants.c_tilt.setPower(constants.c_tiltPower);
@@ -157,7 +157,7 @@ public class Utilities extends LinearOpMode {
             }
 
             if (gamepad2.left_stick_y > 0.2 || gamepad2.left_stick_y < -0.2) { //tilt slide manually
-               constants.hanger.setPower(gamepad2.left_stick_y);
+               constants.hanger.setPower(gamepad2.left_stick_y * .5);
                }
                else {
                    constants.hanger.setPower(0);

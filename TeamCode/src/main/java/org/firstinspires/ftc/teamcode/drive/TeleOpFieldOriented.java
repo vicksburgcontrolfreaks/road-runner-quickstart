@@ -111,6 +111,8 @@ public class TeleOpFieldOriented extends LinearOpMode {
             telemetry.addData("c_tilt pos", constants.c_tilt.getCurrentPosition());
             telemetry.addData("c_tilt current", constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("c tilt target", constants.c_tilt.getTargetPosition());
+            telemetry.addData("collector current", constants.collector.getCurrent(CurrentUnit.MILLIAMPS));
+            telemetry.addData("slide pos", constants.slide.getCurrentPosition());
 
 
 //            telemetry.addData("green", constants.color.green());
@@ -174,6 +176,8 @@ public class TeleOpFieldOriented extends LinearOpMode {
             }
 
             //*****************************     Gamepad 2     **************************************
+            int dump = 0;
+            int hold = 1;
             if (constants.cll.isPressed()){
                 constants.collectorDown = constants.c_tilt.getCurrentPosition();
 //                constants.collectorDown = constants.collectorDown - constants.c_tilt.getCurrentPosition();
@@ -182,12 +186,12 @@ public class TeleOpFieldOriented extends LinearOpMode {
 //            start by spinning collector then drop c_tilt when collector current is 400+ stop collector and raise arm
             if (gamepad2.a) {
                 constants.collector.setPower(1.0);
-                constants.c_tilt.setTargetPosition(constants.collectorDown);
+                constants.c_tilt.setTargetPosition(-225);
 //                constants.c_tilt.setPower(constants.c_tiltPower);
 //                if (constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {
 //                    constants.c_tilt.setPower(0.0);
 //                }
-                if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {// we have collected a sample
+                if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.collectorOverload) {// we have collected a sample
                     constants.collector.setPower(0.0);
                     constants.c_tilt.setTargetPosition(constants.collectorUp);
                     constants.c_tilt.setPower(constants.c_tiltPower);
@@ -225,19 +229,22 @@ public class TeleOpFieldOriented extends LinearOpMode {
                 constants.collector.setPower(-1);
 //            dump
             }
+            if (constants.delivery && constants.slide.getCurrentPosition() > constants.highBasket - 100) {
+                constants.bucket.setPosition(dump);
+            }
             if (Math.abs(constants.slide.getCurrentPosition() - constants.highBasket) < 100) {
-                constants.bucket.setPosition(0);
                 constants.collector.setPower(0);
                 constants.retracting = true;
-                sleep(500);
+                sleep(1000);
             }
             if (constants.retracting) {
-                constants.c_tilt.setTargetPosition(constants.collectorStowed);
-                constants.bucket.setPosition(1);
+                constants.c_tilt.setTargetPosition(constants.collectorMed);
+                constants.bucket.setPosition(hold);
                 constants.slide.setTargetPosition(constants.slideDown);
                 if (Math.abs(constants.slide.getCurrentPosition() - constants.slideDown) < 100) {
                     constants.c_tilt.setTargetPosition(constants.collectorUp);
                     constants.retracting = false;
+                    constants.delivery = false;
                 }
             }
 
