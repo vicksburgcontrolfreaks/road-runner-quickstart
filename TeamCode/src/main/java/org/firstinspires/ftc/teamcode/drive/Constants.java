@@ -183,10 +183,13 @@ public class Constants {
     private int     rightFrontTarget    = 0;
     private int     rightRearTarget     = 0;
     boolean         delivery            = false;
+    boolean         retracting          = false;
     int             counter             = 0;
-    int             collectorDown       = 0;
-    int             collectorUp         = 200;
-    int             highBasket          = 2000;
+    int             collectorDown       = -225;
+    int             collectorStowed     = 100;
+    int             collectorUp         = 0;
+    int             slideDown           = 0;
+    int             highBasket          = -3750;
     int             lowBasket           = 500;
     int             highBar             = 1000;
     int             lowBar              = 250;
@@ -225,23 +228,27 @@ public class Constants {
      */
     public void init()    {
         // Initialize Motors (note: need to use reference to actual OpMode).
-        leftFront   = controlFreaks.hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront  = controlFreaks.hardwareMap.get(DcMotor.class, "rightFront");
-        leftRear    = controlFreaks.hardwareMap.get(DcMotor.class, "leftRear");
-        rightRear   = controlFreaks.hardwareMap.get(DcMotor.class, "rightRear");
+        leftFront   = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront  = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftRear    = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightRear   = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightRear");
         slide       = controlFreaks.hardwareMap.get(DcMotorEx.class, "slide");
-        hanger      = controlFreaks.hardwareMap.get(DcMotor.class,"hanger");
+        hanger      = controlFreaks.hardwareMap.get(DcMotorEx.class,"hanger");
         collector   = controlFreaks.hardwareMap.get(DcMotorEx.class, "collector");
         c_tilt      = controlFreaks.hardwareMap.get(DcMotorEx.class, "c_tilt");
+        bucket      = controlFreaks.hardwareMap.get(Servo.class, "bucket");
+        cll         = controlFreaks.hardwareMap.get(TouchSensor.class, "cll");
+        sll         = controlFreaks.hardwareMap.get(TouchSensor.class, "sll");
+
 
 //        color = controlFreaks.hardwareMap.get(ColorSensor.class, "Color");
 
         hanger.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hanger.setTargetPosition(0);
         hanger.setPower(0.5);
-        hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hanger.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        c_tilt.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        c_tilt.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         c_tilt.setTargetPosition(0);
         c_tilt.setPower(0.1);
         c_tilt.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -249,16 +256,16 @@ public class Constants {
 
         collector.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slide.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slide.setTargetPosition(0);
-        slide.setPower(0.5);
-        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setPower(1);
+        slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         // Set motor directions
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         // Initialize Servos
