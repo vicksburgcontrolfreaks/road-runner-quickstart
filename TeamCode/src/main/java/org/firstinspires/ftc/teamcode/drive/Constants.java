@@ -144,13 +144,13 @@ public class Constants {
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     DcMotorEx slide = null;
-    DcMotor leftFront               = null;
-    DcMotor rightFront              = null;
-    DcMotor rightRear               = null;
-    DcMotor leftRear                = null;
-    DcMotor hanger                  = null;
-    DcMotorEx collector             = null;
-    DcMotorEx c_tilt                = null;
+    DcMotorEx leftFront               = null;
+    DcMotorEx rightFront              = null;
+    DcMotorEx rightRear               = null;
+    DcMotorEx leftRear                = null;
+    DcMotorEx hanger                  = null;
+    DcMotorEx collector               = null;
+    DcMotorEx c_tilt                  = null;
     YawPitchRollAngles orientation;
     AngularVelocity angularVelocity;
     public IMU imu;
@@ -184,13 +184,15 @@ public class Constants {
     private int     rightRearTarget     = 0;
     boolean         delivery            = false;
     boolean         retracting          = false;
+    boolean         collecting          = false;
+    int             currentBasket       = 0;
     int             counter             = 0;
-    int             collectorDown       = 460;
+    int             collectorDown       = 450;
     int             collectorMed        = 120;
     int             collectorUp         = 20;
-    int             slideDown           = -200;
+    int             slideDown           = -100;
     int             highBasket          = -3750;
-    int             lowBasket           = 500;
+    int             lowBasket           = -1950;
     int             highBar             = 1000;
     int             lowBar              = 250;
     int             offset              = 200;
@@ -253,7 +255,7 @@ public class Constants {
 
         c_tilt.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         c_tilt.setTargetPosition(0);
-        c_tilt.setPower(0.1);
+        c_tilt.setPower(0.5);
         c_tilt.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
 
