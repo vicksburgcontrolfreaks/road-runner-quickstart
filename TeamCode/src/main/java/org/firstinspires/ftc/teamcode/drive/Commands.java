@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -53,7 +52,7 @@ public class Commands {
     private Constants constants;
     /* Declare OpMode members. */
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Commands (TeleOpFieldOriented opmode) {
+    public Commands () {
         controlFreaks = opmode;
     }
 

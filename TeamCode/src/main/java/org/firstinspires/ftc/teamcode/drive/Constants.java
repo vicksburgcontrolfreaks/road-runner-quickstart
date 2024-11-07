@@ -141,9 +141,10 @@ public class Constants {
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Constants(TeleOpFieldOriented opmode) {controlFreaks = opmode;}
     public Constants(Utilities utilities) {controlFreaks = utilities;}
+    public Constants(Red utilities) {controlFreaks = utilities;}
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    DcMotorEx slide = null;
+    public DcMotorEx slide = null;
     DcMotorEx leftFront               = null;
     DcMotorEx rightFront              = null;
     DcMotorEx rightRear               = null;
@@ -164,7 +165,7 @@ public class Constants {
 
 //Initialize Servos
 
-    Servo bucket = null;
+    public Servo bucket = null;
     Servo hanger_tilt = null;
 
     private double robotHeading  = 0;
@@ -182,10 +183,10 @@ public class Constants {
     private int     leftRearTarget      = 0;
     private int     rightFrontTarget    = 0;
     private int     rightRearTarget     = 0;
-    boolean         delivery            = false;
+    public boolean         delivery            = false;
     boolean         retracting          = false;
     boolean         collecting          = false;
-    int             currentBasket       = 0;
+    public int             currentBasket       = 0;
     int             counter             = 0;
     int             collectorDown       = 450;
     int             collectorMed        = 120;

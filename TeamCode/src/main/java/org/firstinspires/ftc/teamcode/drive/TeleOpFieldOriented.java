@@ -23,7 +23,8 @@ public class TeleOpFieldOriented extends LinearOpMode {
 
     private org.firstinspires.ftc.teamcode.drive.Utilities Utilities;
     Constants constants = new Constants(this);
-    Commands commands;
+//    private Commands commands = new Commands(this);
+private Commands commands;
     //initalize touch sensors
 
     Orientation angles;
@@ -66,6 +67,7 @@ public class TeleOpFieldOriented extends LinearOpMode {
     public void runOpMode() {
 
         constants.init();
+        commands = new Commands();
         telemetry.update();
         constants.DRIVE_SPEED = 0.75;
         constants.TURN_SPEED = 0.50;
@@ -236,6 +238,7 @@ public class TeleOpFieldOriented extends LinearOpMode {
 
             if (gamepad2.left_bumper) {
                 score(constants.lowBasket);
+//                commands.
             }
 
 
