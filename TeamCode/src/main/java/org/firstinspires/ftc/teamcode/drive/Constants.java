@@ -141,7 +141,7 @@ public class Constants {
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Constants(TeleOpFieldOriented opmode) {controlFreaks = opmode;}
     public Constants(Utilities utilities) {controlFreaks = utilities;}
-    public Constants(Red utilities) {controlFreaks = utilities;}
+//    public Constants() {controlFreaks = utilities;}
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotorEx slide = null;
