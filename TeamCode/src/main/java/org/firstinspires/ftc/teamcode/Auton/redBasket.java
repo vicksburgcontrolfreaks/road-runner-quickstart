@@ -24,91 +24,92 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 @Autonomous(name = "Red Basket", group = "Autonomous")
 public class redBasket extends LinearOpMode {
-    public class Lift {
-        private DcMotorEx lift;
 
-        public Lift(HardwareMap hardwareMap) {
-            lift = hardwareMap.get(DcMotorEx.class, "liftMotor");
-            lift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            lift.setDirection(DcMotorSimple.Direction.FORWARD);
+    public class Slide {
+        private DcMotorEx slide;
+
+        public Slide(HardwareMap hardwareMap) {
+            slide = hardwareMap.get(DcMotorEx.class, "slide");
+            slide.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            slide.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
-        public class LiftUp implements Action {
+        public class SlideUp implements Action {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    lift.setPower(0.8);
+                    slide.setPower(0.8);
                     initialized = true;
                 }
 
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
+                double pos = slide.getCurrentPosition();
+                packet.put("SlidePos", pos);
                 if (pos < 3000.0) {
                     return true;
                 } else {
-                    lift.setPower(0);
+                    slide.setPower(0);
                     return false;
                 }
             }
         }
-        public Action liftUp() {
-            return new LiftUp();
+        public Action SlideUp() {
+            return new SlideUp();
         }
 
-        public class LiftDown implements Action {
+        public class SlideDown implements Action {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    lift.setPower(-0.8);
+                    slide.setPower(-0.8);
                     initialized = true;
                 }
 
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
+                double pos = slide.getCurrentPosition();
+                packet.put("SlidePos", pos);
                 if (pos > 100.0) {
                     return true;
                 } else {
-                    lift.setPower(0);
+                    slide.setPower(0);
                     return false;
                 }
             }
         }
-        public Action liftDown(){
-            return new LiftDown();
+        public Action slideDown(){
+            return new SlideDown();
         }
     }
 
-    public class Claw {
-        private Servo claw;
+    public class Bucket {
+        private Servo bucket;
 
-        public Claw(HardwareMap hardwareMap) {
-            claw = hardwareMap.get(Servo.class, "claw");
+        public Bucket(HardwareMap hardwareMap) {
+            bucket = hardwareMap.get(Servo.class, "bucket");
         }
 
-        public class CloseClaw implements Action {
+        public class Dump implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.55);
+                bucket.setPosition(0.0);
                 return false;
             }
         }
-        public Action closeClaw() {
-            return new CloseClaw();
+        public Action dump() {
+            return new Dump();
         }
 
-        public class OpenClaw implements Action {
+        public class Hold implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(1.0);
+                bucket.setPosition(1.0);
                 return false;
             }
         }
-        public Action openClaw() {
-            return new OpenClaw();
+        public Action hold() {
+            return new Hold();
         }
     }
 
@@ -116,8 +117,8 @@ public class redBasket extends LinearOpMode {
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        Claw claw = new Claw(hardwareMap);
-        Lift lift = new Lift(hardwareMap);
+        Bucket bucket = new Bucket(hardwareMap);
+        Slide slide = new Slide(hardwareMap);
 
         // vision here that outputs position
         int visionOutputPosition = 1;
@@ -150,8 +151,8 @@ public class redBasket extends LinearOpMode {
                 .strafeTo(new Vector2d(48, 12))
                 .build();
 
-        // actions that need to happen on init; for instance, a claw tightening.
-        Actions.runBlocking(claw.closeClaw());
+        // actions that need to happen on init; for instance, a bucket tightening.
+        Actions.runBlocking(bucket.dump());
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -179,9 +180,9 @@ public class redBasket extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen,
-                        lift.liftUp(),
-                        claw.openClaw(),
-                        lift.liftDown(),
+                        slide.SlideUp(),
+                        bucket.hold(),
+                        slide.slideDown(),
                         trajectoryActionCloseOut
                 )
         );
