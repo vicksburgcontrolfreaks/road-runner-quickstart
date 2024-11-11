@@ -139,12 +139,14 @@ public class Constants {
     /* Declare OpMode members. */
     public LinearOpMode controlFreaks;   // gain access to methods in the calling OpMode.
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Constants(TeleOpFieldOriented opmode) {controlFreaks = opmode;}
-    public Constants(Utilities utilities) {controlFreaks = utilities;}
+    public Constants(LinearOpMode opmode) {
+        controlFreaks = opmode;}
+    public Constants(Utilities utilities) {
+        controlFreaks = utilities;}
 //    public Constants() {controlFreaks = utilities;}
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotorEx slide = null;
+    public DcMotorEx slide            = null;
     DcMotorEx leftFront               = null;
     DcMotorEx rightFront              = null;
     DcMotorEx rightRear               = null;
@@ -202,7 +204,6 @@ public class Constants {
     double          DRIVE_SPEED;
     double          collectorOverload   = 450;
     double          c_tiltOverload      = 50000;
-
     double          c_tiltPower         = 0.1;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
@@ -295,6 +296,7 @@ public class Constants {
 //        imu = controlFreaks.hardwareMap.get(BHI260IMU.class, "imu");
 //        imu.initialize(parameters);
         controlFreaks.telemetry.addLine("init complete");
+        controlFreaks.telemetry.addData("collecting", collecting);
         controlFreaks.telemetry.update();
     }
 

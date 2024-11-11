@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.Commands;
+import org.firstinspires.ftc.teamcode.drive.Constants;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -24,101 +26,102 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 @Autonomous(name = "Red Basket", group = "Autonomous")
 public class redBasket extends LinearOpMode {
+    Constants constants = new Constants(this);
+    Commands commands = new Commands(this, constants);
+//    public class Slide {
+//        private DcMotorEx slide;
+//
+//        public Slide(HardwareMap hardwareMap) {
+//            slide = hardwareMap.get(DcMotorEx.class, "slide");
+//            slide.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//            slide.setDirection(DcMotorSimple.Direction.FORWARD);
+//        }
+//
+//        public class SlideUp implements Action {
+//            private boolean initialized = false;
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet) {
+//                if (!initialized) {
+//                    slide.setPower(0.8);
+//                    initialized = true;
+//                }
+//
+//                double pos = slide.getCurrentPosition();
+//                packet.put("SlidePos", pos);
+//                if (pos < 3000.0) {
+//                    return true;
+//                } else {
+//                    slide.setPower(0);
+//                    return false;
+//                }
+//            }
+//        }
+//        public Action SlideUp() {
+//            return new SlideUp();
+//        }
+//
+//        public class SlideDown implements Action {
+//            private boolean initialized = false;
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet) {
+//                if (!initialized) {
+//                    slide.setPower(-0.8);
+//                    initialized = true;
+//                }
+//
+//                double pos = slide.getCurrentPosition();
+//                packet.put("SlidePos", pos);
+//                if (pos > 100.0) {
+//                    return true;
+//                } else {
+//                    slide.setPower(0);
+//                    return false;
+//                }
+//            }
+//        }
+//        public Action slideDown(){
+//            return new SlideDown();
+//        }
+//    }
 
-    public class Slide {
-        private DcMotorEx slide;
-
-        public Slide(HardwareMap hardwareMap) {
-            slide = hardwareMap.get(DcMotorEx.class, "slide");
-            slide.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            slide.setDirection(DcMotorSimple.Direction.FORWARD);
-        }
-
-        public class SlideUp implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    slide.setPower(0.8);
-                    initialized = true;
-                }
-
-                double pos = slide.getCurrentPosition();
-                packet.put("SlidePos", pos);
-                if (pos < 3000.0) {
-                    return true;
-                } else {
-                    slide.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action SlideUp() {
-            return new SlideUp();
-        }
-
-        public class SlideDown implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    slide.setPower(-0.8);
-                    initialized = true;
-                }
-
-                double pos = slide.getCurrentPosition();
-                packet.put("SlidePos", pos);
-                if (pos > 100.0) {
-                    return true;
-                } else {
-                    slide.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action slideDown(){
-            return new SlideDown();
-        }
-    }
-
-    public class Bucket {
-        private Servo bucket;
-
-        public Bucket(HardwareMap hardwareMap) {
-            bucket = hardwareMap.get(Servo.class, "bucket");
-        }
-
-        public class Dump implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                bucket.setPosition(0.0);
-                return false;
-            }
-        }
-        public Action dump() {
-            return new Dump();
-        }
-
-        public class Hold implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                bucket.setPosition(1.0);
-                return false;
-            }
-        }
-        public Action hold() {
-            return new Hold();
-        }
-    }
+//    public class Bucket {
+//        private Servo bucket;
+//
+//        public Bucket(HardwareMap hardwareMap) {
+//            bucket = hardwareMap.get(Servo.class, "bucket");
+//        }
+//
+//        public class Dump implements Action {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet) {
+//                bucket.setPosition(0.0);
+//                return false;
+//            }
+//        }
+//        public Action dump() {
+//            return new Dump();
+//        }
+//
+//        public class Hold implements Action {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet) {
+//                bucket.setPosition(1.0);
+//                return false;
+//            }
+//        }
+//        public Action hold() {
+//            return new Hold();
+//        }
+//    }
 
     @Override
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        Bucket bucket = new Bucket(hardwareMap);
-        Slide slide = new Slide(hardwareMap);
+//        Bucket bucket = new Bucket(hardwareMap);
+//        Slide slide = new Slide(hardwareMap);
 
         // vision here that outputs position
         int visionOutputPosition = 1;
@@ -152,7 +155,7 @@ public class redBasket extends LinearOpMode {
                 .build();
 
         // actions that need to happen on init; for instance, a bucket tightening.
-        Actions.runBlocking(bucket.dump());
+//        Actions.runBlocking(bucket.dump());
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -180,9 +183,9 @@ public class redBasket extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen,
-                        slide.SlideUp(),
-                        bucket.hold(),
-                        slide.slideDown(),
+//                        slide.SlideUp(),
+//                        bucket.hold(),
+//                        slide.slideDown(),
                         trajectoryActionCloseOut
                 )
         );
