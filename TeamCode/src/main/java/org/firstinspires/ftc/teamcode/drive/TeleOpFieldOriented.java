@@ -6,7 +6,6 @@ package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -63,14 +62,14 @@ private Commands commands;
 //    private final int rightFrontTarget = 0;
 //    private final int rightRearTarget = 0;
 
+
     @Override
     public void runOpMode() {
-
         constants.init();
         commands = new Commands();
         telemetry.update();
-        constants.DRIVE_SPEED = 0.75;
-        constants.TURN_SPEED = 0.50;
+        constants.DRIVE_SPEED = 1;
+        constants.TURN_SPEED = 0.75;
 
         YawPitchRollAngles orientation;
 
@@ -116,7 +115,11 @@ private Commands commands;
             telemetry.addData("collector current", constants.collector.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("slide pos", constants.slide.getCurrentPosition());
             telemetry.addData("collecting", constants.collecting);
-            telemetry.addLine("im updating");
+            telemetry.addData("retracting", constants.retracting);
+            telemetry.addData("delivery", constants.delivery);
+            telemetry.addData("hanger target", constants.hanger.getTargetPosition());
+//            telemetry.addLine("im updating");
+
 
 
 //            telemetry.addData("green", constants.color.green());
@@ -161,11 +164,15 @@ private Commands commands;
             //*****************************     Gamepad 1     **************************************
             //**************   ROBOT SPEED   **************
             if (gamepad1.left_stick_y < -0.2) {
+            }
+
+            if (gamepad1.right_bumper) {
 
             }
 
 
             if (gamepad1.left_bumper) { // slow down for precision
+                constants.imu.resetYaw();
 
             }
 
@@ -174,6 +181,7 @@ private Commands commands;
             }
 
             if (gamepad1.a) {
+
             }
 
             if (gamepad1.b) {
@@ -184,8 +192,36 @@ private Commands commands;
             int hold = 1;
             if (constants.cll.isPressed()) {
                 constants.collectorDown = constants.c_tilt.getCurrentPosition();
+                constants.collectorUp = constants.collectorDown -880;
 //                constants.collectorDown = constants.collectorDown - constants.c_tilt.getCurrentPosition();
             }
+
+            if  (gamepad2.right_stick_button) {
+                constants.slide.setTargetPosition(constants.slideDown);
+                constants.c_tilt.setTargetPosition(constants.collectorUp);
+            }
+
+            if (gamepad2.left_stick_button) {
+                constants.slide.setTargetPosition(-2750);
+                constants.c_tilt.setTargetPosition(constants.collectorDown);
+            }
+
+            if (gamepad2.left_stick_y > 0.4) { //tilt slide manually
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() - 250);
+            } else {
+//                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+            }
+
+            if (gamepad2.left_stick_y < -0.4) { //tilt slide manually
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() + 250);
+            } else {
+//                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+            }
+//            if (gamepad2.left_stick_y < -0.2 || gamepad2.left_stick_y > 0.2) { //move slide up manually
+//                constants.hanger.setPower(-gamepad2.left_stick_y);
+//            } else {
+//                constants.hanger.setPower(0);
+//            }
 //             collection sequence
 //            start by spinning collector then drop c_tilt when collector current is 400+ stop collector and raise arm
             if (gamepad2.a) {
@@ -199,38 +235,49 @@ private Commands commands;
 //                if (constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS) > constants.overload) {
 //                    constants.c_tilt.setPower(0.0);
             }
+
             if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.collectorOverload) {// we have collected a sample
-                constants.collector.setPower(0.0);
+                constants.collector.setPower(0.1);
+                constants.c_tilt.setTargetPosition(constants.collectorUp);
                 constants.collecting = false;
             }
+
             if (!constants.collecting && !constants.retracting) {
-                constants.c_tilt.setTargetPosition(constants.collectorUp);
+//                constants.c_tilt.setTargetPosition(constants.collectorUp);
                 constants.collector.setPower(0);
 
             }
 
-
             if (gamepad2.y) {
-            constants.collecting = false;
-            constants.collector.setPower(-1);
+                constants.collecting = false;
+                constants.c_tilt.setTargetPosition(constants.collectorUp);
+                constants.retracting = false;
             }
 
             if (gamepad2.x) {
-
+                constants.collecting = false;
+                constants.c_tilt.setTargetPosition(constants.collectorMed);
+                constants.retracting = false;
             }
 
             if (gamepad2.b) {
-
+                constants.collecting = false;
+                constants.c_tilt.setTargetPosition(constants.collectorDown);
+                constants.collector.setPower(-.25);
             }
 
             if (gamepad2.left_trigger > 0.5) {
 
             }
 
-            if (gamepad2.right_stick_y < -0.2) { //
-
+            if (gamepad2.right_stick_y < -0.4) { //
+                constants.c_tilt.setTargetPosition(constants.c_tilt.getCurrentPosition() + 100);
             }
-            if (gamepad2.right_bumper) { //score sequence for high basket
+            if (gamepad2.right_stick_y > 0.4) {
+                constants.c_tilt.setTargetPosition(constants.c_tilt.getCurrentPosition() - 100);
+            }
+
+                if (gamepad2.right_bumper) { //score sequence for high basket
 //                constants.slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                 score(constants.highBasket);
             }
@@ -261,14 +308,28 @@ private Commands commands;
                     constants.retracting = false;
                 }
             }
+            if (gamepad2.dpad_down) {
+                constants.slide.setTargetPosition(constants.slide.getCurrentPosition() + 40);
+
+                constants.slideDown = constants.slide.getCurrentPosition();
+            }
+            if (gamepad2.dpad_up) {
+                constants.slide.setTargetPosition(constants.slide.getCurrentPosition() - 40);
+
+                constants.slideDown = constants.slide.getCurrentPosition();
+            }
+            if (gamepad2.dpad_right) {
+                constants.hanger_tilt.setPosition(1);
+            }
+            if (gamepad2.dpad_left) {
+                constants.hanger_tilt.setPosition(0);
+            }
 
 
 //            if (gamepad2.left_stick_y > 0.2) { //
 //
 //                }
 //
-//            if (gamepad2.dpad_up) {
-//                }
 //
 //            if (gamepad2.dpad_down) {
 //                }
@@ -288,7 +349,7 @@ private Commands commands;
 //            set delivery to true
         constants.delivery = true;
 //            reverse collector
-        constants.collector.setPower(-1);
+        constants.collector.setPower(-0.5);
         constants.currentBasket = whichBasket;
 //            dump
     }

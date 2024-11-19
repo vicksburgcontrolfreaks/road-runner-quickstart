@@ -37,6 +37,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -46,6 +47,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Auton.auton;
 import org.openftc.apriltag.AprilTagDetection;
 
 import com.qualcomm.robotcore.hardware.Servo;
@@ -65,7 +67,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  *
  */
 
+
+
 public class Constants {
+    boolean r_6494 = true;     boolean r_5618 = false;
+//    boolean r_6494 = false;     boolean r_5618 = true;
+
+
     /*
      * These are motor constants that should be listed online for your motors.
      */
@@ -141,18 +149,20 @@ public class Constants {
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Constants(TeleOpFieldOriented opmode) {controlFreaks = opmode;}
     public Constants(Utilities utilities) {controlFreaks = utilities;}
-    public Constants(Red utilities) {controlFreaks = utilities;}
+    public Constants(auton auton) {controlFreaks = auton;}
+
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotorEx slide = null;
-    DcMotorEx leftFront               = null;
-    DcMotorEx rightFront              = null;
-    DcMotorEx rightRear               = null;
-    DcMotorEx leftRear                = null;
-    DcMotorEx hanger                  = null;
-    DcMotorEx collector               = null;
-    DcMotorEx c_tilt                  = null;
-    YawPitchRollAngles orientation;
+    public DcMotorEx slide                   = null;
+    public DcMotorEx leftFront               = null;
+    public DcMotorEx rightFront              = null;
+    public DcMotorEx rightRear               = null;
+    public DcMotorEx leftRear                = null;
+    public DcMotorEx hanger                  = null;
+    public DcMotorEx collector               = null;
+    public DcMotorEx c_tilt                  = null;
+
+    public YawPitchRollAngles orientation;
     AngularVelocity angularVelocity;
     public IMU imu;
     // Define a variable for our color sensor
@@ -168,42 +178,30 @@ public class Constants {
     public Servo bucket = null;
     Servo hanger_tilt = null;
 
-    private double robotHeading  = 0;
-    private double headingOffset = 0;
-    private double headingError  = 0;
-
     // These variable are declared here (as class members) so they can be updated in various methods,
     // but still be displayed by sendTelemetry()
-    private double  targetHeading       = 0;
-    private double  driveSpeed          = 0;
-    private double  turnSpeed           = 0;
-    private double  leftSpeed           = 0;
-    private double  rightSpeed          = 0;
-    private int     leftFrontTarget     = 0;
-    private int     leftRearTarget      = 0;
-    private int     rightFrontTarget    = 0;
-    private int     rightRearTarget     = 0;
-    public boolean         delivery            = false;
-    boolean         retracting          = false;
-    boolean         collecting          = false;
-    public int             currentBasket       = 0;
-    int             counter             = 0;
-    int             collectorDown       = 450;
-    int             collectorMed        = 120;
-    int             collectorUp         = 20;
-    int             slideDown           = -100;
-    int             highBasket          = -3750;
-    int             lowBasket           = -1950;
-    int             highBar             = 1000;
-    int             lowBar              = 250;
-    int             offset              = 200;
-    boolean         START_LEFT;
-    double          TURN_SPEED;
-    double          DRIVE_SPEED;
-    double          collectorOverload   = 450;
-    double          c_tiltOverload      = 50000;
 
-    double          c_tiltPower         = 0.1;
+    public boolean          delivery            = false;
+    boolean                 retracting          = false;
+    boolean                 collecting          = false;
+    public int              currentBasket       = 5000;
+    int                     collectorDown       = 900;
+    public int              collectorMed        = 200;
+    public int              collectorUp         = 20;
+    public int              slideDown           = 20;
+    public int              highBasket          = -3750;
+    int                     lowBasket           = -1950;
+    int                     highBar             = 1000;
+    int                     lowBar              = 250;
+    int                     offset              = 200;
+    boolean                 START_LEFT;
+
+    double                  TURN_SPEED;
+    double                  DRIVE_SPEED;
+    double                  collectorOverload   = 1000;
+    double                  c_tiltOverload      = 50000;
+
+    double                  c_tiltPower         = 0.1;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     static final double     COUNTS_PER_MOTOR_REV    = 28.0 ;     // REV HD Hex
@@ -233,32 +231,39 @@ public class Constants {
      */
     public void init()    {
         // Initialize Motors (note: need to use reference to actual OpMode).
-        leftFront   = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftFront");
-        rightFront  = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightFront");
-        leftRear    = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear   = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightRear");
-        slide       = controlFreaks.hardwareMap.get(DcMotorEx.class, "slide");
-        hanger      = controlFreaks.hardwareMap.get(DcMotorEx.class,"hanger");
-        collector   = controlFreaks.hardwareMap.get(DcMotorEx.class, "collector");
-        c_tilt      = controlFreaks.hardwareMap.get(DcMotorEx.class, "c_tilt");
-        bucket      = controlFreaks.hardwareMap.get(Servo.class, "bucket");
-        cll         = controlFreaks.hardwareMap.get(TouchSensor.class, "cll");
-        sll         = controlFreaks.hardwareMap.get(TouchSensor.class, "sll");
+        leftRear    = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftRear"); //Ch0
+        rightRear   = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightRear"); //Ch1
+        leftFront   = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftFront");  //Ch2
+        rightFront  = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightFront"); //Ch3
+        slide       = controlFreaks.hardwareMap.get(DcMotorEx.class, "slide"); //Eh0
+        hanger      = controlFreaks.hardwareMap.get(DcMotorEx.class,"hanger"); //Eh1
+        c_tilt      = controlFreaks.hardwareMap.get(DcMotorEx.class, "c_tilt"); //Eh2
+        collector   = controlFreaks.hardwareMap.get(DcMotorEx.class, "collector"); //Eh3
+        hanger_tilt = controlFreaks.hardwareMap.get(Servo.class, "hanger_tilt"); //Ch4 (servo)
+        bucket      = controlFreaks.hardwareMap.get(Servo.class, "bucket"); //Ch5 (servo)
+        sll         = controlFreaks.hardwareMap.get(TouchSensor.class, "sll"); //Ch1 (digital device)
+        cll         = controlFreaks.hardwareMap.get(TouchSensor.class, "cll"); //Ch3 (digital device)
 
 
 //        color = controlFreaks.hardwareMap.get(ColorSensor.class, "Color");
-
         hanger.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         hanger.setTargetPosition(0);
-        hanger.setPower(0.5);
+        hanger.setPower(1);
         hanger.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+//        hanger.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         hanger.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         c_tilt.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         c_tilt.setTargetPosition(0);
-        c_tilt.setPower(0.5);
+        c_tilt.setPower(0.85);
         c_tilt.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
+        c_tilt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (r_5618) {
+            c_tilt.setDirection(DcMotorEx.Direction.REVERSE);
+        }
+        if (r_6494) {
+            c_tilt.setDirection(DcMotorEx.Direction.FORWARD);
+        }
 
         collector.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -266,25 +271,31 @@ public class Constants {
         slide.setTargetPosition(0);
         slide.setPower(1);
         slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        if (r_6494) {
+            slide.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
-        // Set motor directions
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
-        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        if (r_5618) {
+            leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+            leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+            rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+            rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        }
 
+        if (r_6494) {
+            leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+            leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+            rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+            rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+        leftFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftRear.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        // Initialize Servos
-
-
-
-                  // define initialization values for IMU, and then initialize it.
-//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-//        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-//        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         //TODO:
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -292,192 +303,11 @@ public class Constants {
         // Note: if you choose two conflicting directions, this initialization will cause a code exception.
         imu = controlFreaks.hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
 //        imu = controlFreaks.hardwareMap.get(BHI260IMU.class, "imu");
 //        imu.initialize(parameters);
         controlFreaks.telemetry.addLine("init complete");
         controlFreaks.telemetry.update();
-    }
 
-
-//    public void runAprilTag(){
-//        int cameraMonitorViewId = controlFreaks.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", controlFreaks.hardwareMap.appContext.getPackageName());
-//        camera = OpenCvCameraFactory.getInstance().createWebcam(controlFreaks.hardwareMap.get(WebcamName.class, "Webcam 2"), cameraMonitorViewId);
-//        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-//
-//        camera.setPipeline(aprilTagDetectionPipeline);
-//        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-//
-//        {
-//            @Override
-//            public void onOpened()
-//            {
-//                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
-//            } //640x480, 1280x720, 1024x768, 800x448, 960x720, 960x544, 864x480, 848x480, 800x600, 800x448, 640x360, 352x288, 320x240, 1920x1080
-//
-//            @Override
-//            public void onError(int errorCode)
-//            {
-//
-//            }
-//        });
-//
-//        controlFreaks.telemetry.setMsTransmissionInterval(50);
-//
-//
-//        while (!controlFreaks.isStarted() && !controlFreaks.isStopRequested())
-//        {
-//            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
-//
-//            if(currentDetections.size() != 0)
-//            {
-//                boolean tagFound = false;
-//
-//                for(AprilTagDetection tag : currentDetections)
-//                {
-//                    if(tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT)
-//                    {
-//                        tagOfInterest = tag;
-//                        tagFound = true;
-//                        break;
-//                    }
-//                }
-//
-//                if(tagFound)
-//                {
-//                    controlFreaks.telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-//                    tagToTelemetry(tagOfInterest);
-//                }
-//                else
-//                {
-//                    controlFreaks.telemetry.addLine("Don't see tag of interest :(");
-//
-//                    if(tagOfInterest == null)
-//                    {
-//                        controlFreaks.telemetry.addLine("(The tag has never been seen)");
-//                    }
-//                    else
-//                    {
-//                        controlFreaks.telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-//                        tagToTelemetry(tagOfInterest);
-//                    }
-//                }
-//
-//            }
-//            else
-//            {
-//                controlFreaks.telemetry.addLine("Don't see tag of interest :(");
-//
-//                if(tagOfInterest == null)
-//                {
-//                    controlFreaks.telemetry.addLine("(The tag has never been seen)");
-//                }
-//                else
-//                {
-//                    controlFreaks.telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-//                    tagToTelemetry(tagOfInterest);
-//                }
-//
-//            }
-//
-//            controlFreaks.telemetry.update();
-//            controlFreaks.sleep(20);
-//        }
-//
-//        /*
-//         * The START command just came in: now work off the latest snapshot acquired
-//         * during the init loop.
-//         */
-//
-//        /* Update the telemetry */
-//        camera.closeCameraDevice(); //shut off the camera to preserve battery
-//
-//        if(tagOfInterest != null)
-//        {
-//            controlFreaks.telemetry.addLine("Tag snapshot:\n");
-//            tagToTelemetry(tagOfInterest);
-//            controlFreaks.telemetry.update();
-//        }
-//        else
-//        {
-//            controlFreaks.telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-//            controlFreaks.telemetry.update();
-//        }
-//    }
-
-    public void runWithEncoders(){
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Set the encoders for closed loop speed control, and reset the heading.
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void floatChassis(){
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-    }
-
-    public void brakeChassis(){
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-    }
-
-    private void sendTelemetry(boolean straight) {
-
-        if (straight) {
-            controlFreaks.telemetry.addData("Motion", "Drive Straight");
-            controlFreaks.telemetry.addData("Target Pos L:R",  "%7d:%7d",      leftFrontTarget,  rightFrontTarget);
-            controlFreaks.telemetry.addData("Actual Pos L:R",  "%7d:%7d",      leftFront.getCurrentPosition(),
-                    rightFront.getCurrentPosition());
-        } else {
-            controlFreaks.telemetry.addData("Motion", "Turning");
-        }
-
-        controlFreaks.telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
-        controlFreaks.telemetry.addData("Error:Steer",  "%5.1f:%5.1f", headingError, turnSpeed);
-        controlFreaks.telemetry.addData("Wheel Speeds L:R.", "%5.2f : %5.2f", leftSpeed, rightSpeed);
-        controlFreaks.telemetry.update();
-    }
-
-    /**
-     * read the raw (un-offset Gyro heading) directly from the IMU
-     */
-    public double getRawHeading() {
-//        Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        Orientation angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
-        //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        //AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
-    }
-
-    /**
-     * Reset the "offset" heading back to zero
-     */
-    public void resetHeading() {
-        // Save a new heading offset equal to the current raw heading.
-        headingOffset = getRawHeading();
-        robotHeading = 0;
-    }
-
-    @SuppressLint("DefaultLocale")
-    void tagToTelemetry(AprilTagDetection detection)
-    {
-        controlFreaks.telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        controlFreaks.telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        controlFreaks.telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        controlFreaks.telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        controlFreaks.telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.x)));
-        controlFreaks.telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.y)));
-        controlFreaks.telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.z)));
     }
 }

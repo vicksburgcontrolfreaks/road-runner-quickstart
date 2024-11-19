@@ -53,11 +53,9 @@ public class Commands {
     /* Declare OpMode members. */
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Commands () {
+        LinearOpMode opmode = null;
         controlFreaks = opmode;
     }
-
-
-
     //*************************************  AprilTag Stuff  ***************************
     /**
      * The variable to store our instance of the AprilTag processor.

@@ -27,18 +27,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Auton;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.drive.Constants;
 
 /*
  *  This OpMode illustrates the concept of driving an autonomous path based on Gyro (IMU) heading and encoder counts.
@@ -88,14 +90,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive By Gyro", group="Robot")
-@Disabled
+@Autonomous(name="auton", group="Auton")
+//@Disabled
+public class auton extends LinearOpMode {
 
-public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
+    Constants constants = new Constants(this);
 
     /* Declare OpMode members. */
-    private DcMotor         leftDrive   = null;
-    private DcMotor         rightDrive  = null;
+    private DcMotorEx         leftDrive   = null;
+    private DcMotorEx        rightDrive  = null;
     private IMU             imu         = null;      // Control/Expansion Hub IMU
 
     private double          headingError  = 0;
@@ -120,14 +123,14 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 1.26 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * 3.1415);
 
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
     static final double     DRIVE_SPEED             = 0.4;     // Max driving speed for better distance accuracy.
     static final double     TURN_SPEED              = 0.2;     // Max turn speed to limit turn rate.
     static final double     HEADING_THRESHOLD       = 1.0 ;    // How close must the heading get to the target before moving to next step.
-                                                               // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
+    // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
     // Define the Proportional control coefficient (or GAIN) for "heading control".
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
     // Increase these numbers if the heading does not correct strongly enough (eg: a heavy robot or using tracks)
@@ -138,36 +141,36 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        constants.init();
         // Initialize the drive system variables.
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+//        constants.leftRear  = hardwareMap.get(DcMotorEx.class, "leftRear");
+//        constants.rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+//        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+//        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /* The next two lines define Hub orientation.
          * The Default Orientation (shown) is when a hub is mounted horizontally with the printed logo pointing UP and the USB port pointing FORWARD.
          *
          * To Do:  EDIT these two lines to match YOUR mounting configuration.
          */
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        // Now initialize the IMU with this mounting orientation
-        // This sample expects the IMU to be in a REV Hub and named "imu".
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+//        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+//
+//        // Now initialize the IMU with this mounting orientation
+//        // This sample expects the IMU to be in a REV Hub and named "imu".
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Ensure the robot is stationary.  Reset the encoders and set the motors to BRAKE mode
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Wait for the game to start (Display Gyro value while waiting)
         while (opModeInInit()) {
@@ -176,55 +179,112 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
         }
 
         // Set the encoders for closed loop speed control, and reset the heading.
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        imu.resetYaw();
+        constants.leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        constants.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        constants.leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        constants.rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        constants.leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        constants.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        constants.imu.resetYaw();
 
         // Step through each leg of the path,
         // Notes:   Reverse movement is obtained by setting a negative distance (not speed)
         //          holdHeading() is used after turns to let the heading stabilize
         //          Add a sleep(2000) after any step to keep the telemetry data visible for review
 
-        driveStraight(DRIVE_SPEED, 24.0, 0.0);    // Drive Forward 24"
-        turnToHeading( TURN_SPEED, -45.0);               // Turn  CW to -45 Degrees
-        holdHeading( TURN_SPEED, -45.0, 0.5);   // Hold -45 Deg heading for a 1/2 second
+//          driveStraight(DRIVE_SPEED,-20,180);
+        constants.leftRear.setPower(0.5);
+        constants.rightFront.setPower(0.5);
+        constants.leftFront.setPower(0.5);
+        constants.rightRear.setPower(0.5);
+        sleep(400);
+        constants.leftRear.setPower(0);
+        constants.rightFront.setPower(0);
+        constants.leftFront.setPower(0);
+        constants.rightRear.setPower(0);
+        score(constants.highBasket);
 
-        driveStraight(DRIVE_SPEED, 17.0, -45.0);  // Drive Forward 17" at -45 degrees (12"x and 12"y)
-        turnToHeading( TURN_SPEED,  45.0);               // Turn  CCW  to  45 Degrees
-        holdHeading( TURN_SPEED,  45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
+        sleep(200);
 
-        driveStraight(DRIVE_SPEED, 17.0, 45.0);  // Drive Forward 17" at 45 degrees (-12"x and 12"y)
-        turnToHeading( TURN_SPEED,   0.0);               // Turn  CW  to 0 Degrees
-        holdHeading( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for 1 second
+        while (Math.abs(constants.slide.getCurrentPosition() - constants.currentBasket) > 1000) {
+            //while above statement is true, do nothing (wait)
+        }
+        constants.bucket.setPosition(0.0);//dump
+        while (Math.abs(constants.slide.getCurrentPosition() - constants.currentBasket) > 100) {
+            //while above statement is true, do nothing (wait)
+        }
+        constants.collector.setPower(0);
+        sleep(800);
+        constants.bucket.setPosition(1);//hold
+        sleep(200);
+        constants.c_tilt.setTargetPosition(constants.collectorMed);
+        constants.slide.setTargetPosition(constants.slideDown);
+        while (Math.abs(constants.slide.getCurrentPosition() - constants.slideDown) > 100) {
+            //wait
+        }
+        constants.c_tilt.setTargetPosition(constants.collectorUp);
+        //forward
+        constants.leftRear.setPower(-0.5);
+        constants.rightFront.setPower(-0.5);
+        constants.leftFront.setPower(-0.5);
+        constants.rightRear.setPower(-0.5);
+        sleep(400);
+        //stafe
+        constants.leftRear.setPower(-1);
+        constants.rightFront.setPower(-1);
+        constants.leftFront.setPower(1);
+        constants.rightRear.setPower(1);
+        sleep(1200);
+        constants.leftRear.setPower(-0.5);
+        constants.rightFront.setPower(-0.5);
+        constants.leftFront.setPower(-0.5);
+        constants.rightRear.setPower(-0.5);
+        sleep(300);
+        constants.slide.setTargetPosition(constants.highBasket);
 
-        driveStraight(DRIVE_SPEED,-48.0, 0.0);    // Drive in Reverse 48" (should return to approx. staring position)
+
+//        driveStraight(DRIVE_SPEED, 24.0, 0.0);    // Drive Forward 24"
+//        turnToHeading( TURN_SPEED, -45.0);               // Turn  CW to -45 Degrees
+//        holdHeading( TURN_SPEED, -45.0, 0.5);   // Hold -45 Deg heading for a 1/2 second
+//
+//        driveStraight(DRIVE_SPEED, 17.0, -45.0);  // Drive Forward 17" at -45 degrees (12"x and 12"y)
+//        turnToHeading( TURN_SPEED,  45.0);               // Turn  CCW  to  45 Degrees
+//        holdHeading( TURN_SPEED,  45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
+//
+//        driveStraight(DRIVE_SPEED, 17.0, 45.0);  // Drive Forward 17" at 45 degrees (-12"x and 12"y)
+//        turnToHeading( TURN_SPEED,   0.0);               // Turn  CW  to 0 Degrees
+//        holdHeading( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for 1 second
+//
+//        driveStraight(DRIVE_SPEED,-48.0, 0.0);    // Drive in Reverse 48" (should return to approx. staring position)
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // Pause to display last telemetry message.
+
+
+        /*
+         * ====================================================================================================
+         * Driving "Helper" functions are below this line.
+         * These provide the high and low level methods that handle driving straight and turning.
+         * ====================================================================================================
+         */
+
+        // **********  HIGH Level driving functions.  ********************
+
+        /**
+         *  Drive in a straight line, on a fixed compass heading (angle), based on encoder counts.
+         *  Move will stop if either of these conditions occur:
+         *  1) Move gets to the desired position
+         *  2) Driver stops the OpMode running.
+         *
+         * @param maxDriveSpeed MAX Speed for forward/rev motion (range 0 to +1.0) .
+         * @param distance   Distance (in inches) to move from current position.  Negative distance means move backward.
+         * @param heading      Absolute Heading Angle (in Degrees) relative to last gyro reset.
+         *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+         *                   If a relative angle is required, add/subtract from the current robotHeading.
+         */
     }
-
-    /*
-     * ====================================================================================================
-     * Driving "Helper" functions are below this line.
-     * These provide the high and low level methods that handle driving straight and turning.
-     * ====================================================================================================
-     */
-
-    // **********  HIGH Level driving functions.  ********************
-
-    /**
-    *  Drive in a straight line, on a fixed compass heading (angle), based on encoder counts.
-    *  Move will stop if either of these conditions occur:
-    *  1) Move gets to the desired position
-    *  2) Driver stops the OpMode running.
-    *
-    * @param maxDriveSpeed MAX Speed for forward/rev motion (range 0 to +1.0) .
-    * @param distance   Distance (in inches) to move from current position.  Negative distance means move backward.
-    * @param heading      Absolute Heading Angle (in Degrees) relative to last gyro reset.
-    *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-    *                   If a relative angle is required, add/subtract from the current robotHeading.
-    */
     public void driveStraight(double maxDriveSpeed,
                               double distance,
                               double heading) {
@@ -233,16 +293,16 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            int moveCounts = (int)(distance * COUNTS_PER_INCH);
-            leftTarget = leftDrive.getCurrentPosition() + moveCounts;
-            rightTarget = rightDrive.getCurrentPosition() + moveCounts;
+            int moveCounts = (int)(distance * - COUNTS_PER_INCH);
+            leftTarget = constants.leftRear.getCurrentPosition() + moveCounts;
+            rightTarget = constants.rightFront.getCurrentPosition() + moveCounts;
 
             // Set Target FIRST, then turn on RUN_TO_POSITION
-            leftDrive.setTargetPosition(leftTarget);
-            rightDrive.setTargetPosition(rightTarget);
+            constants.leftRear.setTargetPosition(leftTarget);
+            constants.rightFront.setTargetPosition(rightTarget);
 
-            leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            constants.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            constants.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // Set the required driving speed  (must be positive for RUN_TO_POSITION)
             // Start driving straight, and then enter the control loop
@@ -251,7 +311,7 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                   (leftDrive.isBusy() && rightDrive.isBusy())) {
+                    (constants.leftRear.isBusy() && constants.rightFront.isBusy())) {
 
                 // Determine required steering to keep on heading
                 turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
@@ -269,8 +329,8 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
             // Stop all motion & Turn off RUN_TO_POSITION
             moveRobot(0, 0);
-            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            constants.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            constants.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -394,8 +454,10 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
             rightSpeed /= max;
         }
 
-        leftDrive.setPower(leftSpeed);
-        rightDrive.setPower(rightSpeed);
+        constants.leftRear.setPower(leftSpeed);
+        constants.rightFront.setPower(rightSpeed);
+        constants.leftFront.setPower(constants.leftRear.getPower());
+        constants.rightRear.setPower(constants.rightFront.getPower());
     }
 
     /**
@@ -408,8 +470,8 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
         if (straight) {
             telemetry.addData("Motion", "Drive Straight");
             telemetry.addData("Target Pos L:R",  "%7d:%7d",      leftTarget,  rightTarget);
-            telemetry.addData("Actual Pos L:R",  "%7d:%7d",      leftDrive.getCurrentPosition(),
-                    rightDrive.getCurrentPosition());
+            telemetry.addData("Actual Pos L:R",  "%7d:%7d",      constants.leftRear.getCurrentPosition(),
+                    constants.rightFront.getCurrentPosition());
         } else {
             telemetry.addData("Motion", "Turning");
         }
@@ -424,7 +486,18 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
      * read the Robot heading directly from the IMU (in degrees)
      */
     public double getHeading() {
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        YawPitchRollAngles orientation = constants.imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.DEGREES);
+    }
+
+    public void score(int whichBasket){
+        //            set slide position
+        constants.slide.setTargetPosition(whichBasket);
+//            set delivery to true
+        constants.delivery = true;
+//            reverse collector
+        constants.collector.setPower(-1);
+        constants.currentBasket = whichBasket;
+//            dump
     }
 }

@@ -22,10 +22,10 @@ public class Utilities extends LinearOpMode {
         int slideTarget = 0;
         int e_tiltTarget = 0;
         constants.slide.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        constants.hanger.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        constants.hanger.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         constants.collector.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         constants.c_tilt.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        constants.hanger.setPower(0);
+        constants.hanger.setPower(1);
         constants.collector.setPower(0);
         constants.slide.setPower(0);
         constants.c_tilt.setPower(0);
@@ -48,10 +48,17 @@ public class Utilities extends LinearOpMode {
             telemetry.addData("right stick y", gamepad1.right_stick_y);
             telemetry.addData("left stick y", gamepad1.left_stick_y);
             telemetry.addData("c tilt pos", constants.c_tilt.getCurrentPosition());
+            telemetry.addData("left encoder", constants.leftRear.getCurrentPosition());
+            telemetry.addData("right encoder", constants.rightFront.getCurrentPosition());
+
             telemetry.addData("left front", constants.leftFront.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("left rear", constants.leftRear.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("right front", constants.rightFront.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("right rear", constants.rightRear.getCurrent(CurrentUnit.MILLIAMPS));
+            telemetry.addData("hanger target pos", constants.hanger.getTargetPosition());
+            telemetry.addData("hanger current", constants.hanger.getCurrent(CurrentUnit.MILLIAMPS));
+            telemetry.addData("gamepad2 left trigger ", gamepad2.left_trigger);
+            telemetry.addData("gamepad2 right trigger ", gamepad2.right_trigger);
 
             final int e_tiltPickUp = 0; //The tilt position for picking up a pixel 320 for 5618 and 6494
             final int e_tiltStowed = -475; //The tilt position for moving across the field -30
@@ -161,12 +168,12 @@ public class Utilities extends LinearOpMode {
                 constants.slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
-            if (gamepad2.left_stick_y > 0.2 || gamepad2.left_stick_y < -0.2) { //tilt slide manually
-               constants.hanger.setPower(gamepad2.left_stick_y * .5);
+            if (gamepad2.left_stick_y > 0.2) { //tilt slide manually
+               constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() - 100);
                }
-               else {
-                   constants.hanger.setPower(0);
-                }
+            if (gamepad2.left_stick_y < -0.2) { //tilt slide manually
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() + 100);
+            }
 
 
 //            } else if (gamepad2.left_stick_y > 0.2) {
@@ -174,13 +181,13 @@ public class Utilities extends LinearOpMode {
 
 
 
-            //launch drone0
             if (gamepad2.dpad_up) {
-                constants.collector.setPower(0.5);
+                constants.c_tilt.setTargetPosition(constants.collectorUp);
             }
 
-            //Reset the drone hammer
             if (gamepad2.dpad_down) {
+                constants.c_tilt.setTargetPosition(constants.collectorDown);
+
             }
 
             //Set the drone
