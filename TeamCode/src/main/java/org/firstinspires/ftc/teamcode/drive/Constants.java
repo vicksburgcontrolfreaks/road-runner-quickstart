@@ -31,8 +31,6 @@ package org.firstinspires.ftc.teamcode.drive;
 
 import static java.lang.Thread.sleep;
 
-import android.annotation.SuppressLint;
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,14 +39,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Auton.auton;
-import org.openftc.apriltag.AprilTagDetection;
 
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -184,11 +177,14 @@ public class Constants {
     public boolean          delivery            = false;
     boolean                 retracting          = false;
     boolean                 collecting          = false;
+    boolean                 slideMoveUp           = false;
+    boolean                 slideMoveDown = false;
     public int              currentBasket       = 5000;
-    int                     collectorDown       = 900;
+    int                     collectorDown       = 1100;
     public int              collectorMed        = 200;
     public int              collectorUp         = 20;
-    public int              slideDown           = 20;
+    public int              slideDown           = -20;
+    public int              slideUp             = 1500;
     public int              highBasket          = -3750;
     int                     lowBasket           = -1950;
     int                     highBar             = 1000;
@@ -198,7 +194,7 @@ public class Constants {
 
     double                  TURN_SPEED;
     double                  DRIVE_SPEED;
-    double                  collectorOverload   = 1000;
+    double                  collectorOverload   = 2250;
     double                  c_tiltOverload      = 50000;
 
     double                  c_tiltPower         = 0.1;
@@ -255,7 +251,7 @@ public class Constants {
 
         c_tilt.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         c_tilt.setTargetPosition(0);
-        c_tilt.setPower(0.85);
+        c_tilt.setPower(0.65);
         c_tilt.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         c_tilt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         if (r_5618) {
@@ -272,8 +268,9 @@ public class Constants {
         slide.setPower(1);
         slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         if (r_6494) {
-            slide.setDirection(DcMotorSimple.Direction.REVERSE);
+            slide.setDirection(DcMotorSimple.Direction.FORWARD);
         }
+        collector.setDirection((DcMotorSimple.Direction.REVERSE));
 
         if (r_5618) {
             leftFront.setDirection(DcMotorEx.Direction.REVERSE);

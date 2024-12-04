@@ -194,11 +194,14 @@ public class auton extends LinearOpMode {
         //          Add a sleep(2000) after any step to keep the telemetry data visible for review
 
 //          driveStraight(DRIVE_SPEED,-20,180);
+        //start of score/auton
+        //backwards
         constants.leftRear.setPower(0.5);
         constants.rightFront.setPower(0.5);
         constants.leftFront.setPower(0.5);
         constants.rightRear.setPower(0.5);
         sleep(400);
+        // stop to score
         constants.leftRear.setPower(0);
         constants.rightFront.setPower(0);
         constants.leftFront.setPower(0);
@@ -224,24 +227,40 @@ public class auton extends LinearOpMode {
             //wait
         }
         constants.c_tilt.setTargetPosition(constants.collectorUp);
+        //end of score
         //forward
         constants.leftRear.setPower(-0.5);
         constants.rightFront.setPower(-0.5);
         constants.leftFront.setPower(-0.5);
         constants.rightRear.setPower(-0.5);
-        sleep(400);
+        sleep(75);
         //stafe
         constants.leftRear.setPower(-1);
         constants.rightFront.setPower(-1);
         constants.leftFront.setPower(1);
         constants.rightRear.setPower(1);
-        sleep(1200);
-        constants.leftRear.setPower(-0.5);
-        constants.rightFront.setPower(-0.5);
+        sleep(1350);
+        //wait
+        constants.leftRear.setPower(0);
+        constants.rightFront.setPower(0);
+        constants.leftFront.setPower(0);
+        constants.rightRear.setPower(0);
+        sleep(400);
+        //stafe to block
+        constants.leftRear.setPower(0.5);
+        constants.rightFront.setPower(0.5);
         constants.leftFront.setPower(-0.5);
         constants.rightRear.setPower(-0.5);
-        sleep(300);
-        constants.slide.setTargetPosition(constants.highBasket);
+        sleep(750);
+        //rotate
+        constants.leftRear.setPower(0.5);
+        constants.rightFront.setPower(-0.5);
+        constants.leftFront.setPower(0.5);
+        constants.rightRear.setPower(-0.5);
+        sleep(622);
+
+
+        constants.c_tilt.setTargetPosition(250);
 
 
 //        driveStraight(DRIVE_SPEED, 24.0, 0.0);    // Drive Forward 24"
