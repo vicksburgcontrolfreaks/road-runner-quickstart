@@ -24,7 +24,7 @@ public class TeleOpFieldOriented extends LinearOpMode {
     Constants constants = new Constants(this);
 //    private Commands commands = new Commands(this);
 private Commands commands;
-    //initalize touch sensors
+    //initalize touch sensor
 
     Orientation angles;
 
@@ -90,6 +90,7 @@ private Commands commands;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+//        constants.slide.setTargetPosition(constants.slideUp);
 
         while (opModeIsActive()) {
             // run until the end of the match (driver presses STOP)
@@ -103,21 +104,23 @@ private Commands commands;
 //            telemetry.addData("Score X", scoreX);
 //            telemetry.addData("Score Y", scoreY);
             telemetry.addData("Yaw", ("%.3f"), gyro_degrees);
-            telemetry.addData("hanger", constants.hanger.getCurrentPosition());
 //            telemetry.addData("slide_motor", constants.slide_motor.getCurrentPosition());
             telemetry.addData("state", state);
             telemetry.addData("gamepad2.right_stick_y", gamepad2.right_stick_y);
             telemetry.addData("gamepad2.left_stick_y", gamepad2.left_stick_y);
             telemetry.addData("slidemotor current", constants.slide.getCurrent(CurrentUnit.MILLIAMPS));
-            telemetry.addData("c_tilt pos", constants.c_tilt.getCurrentPosition());
-            telemetry.addData("c_tilt current", constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS));
-            telemetry.addData("c tilt target", constants.c_tilt.getTargetPosition());
             telemetry.addData("collector current", constants.collector.getCurrent(CurrentUnit.MILLIAMPS));
+            telemetry.addData("c_tilt current", constants.c_tilt.getCurrent(CurrentUnit.MILLIAMPS));
+            telemetry.addData("hanger", constants.hanger.getCurrentPosition());
+            telemetry.addData("c_tilt pos", constants.c_tilt.getCurrentPosition());
+            telemetry.addData("c tilt target", constants.c_tilt.getTargetPosition());
             telemetry.addData("slide pos", constants.slide.getCurrentPosition());
+            telemetry.addData("hanger target", constants.hanger.getTargetPosition());
+            telemetry.addData("holdSlideDown", constants.holdSlideDown);
             telemetry.addData("collecting", constants.collecting);
             telemetry.addData("retracting", constants.retracting);
             telemetry.addData("delivery", constants.delivery);
-            telemetry.addData("hanger target", constants.hanger.getTargetPosition());
+            telemetry.addData("sll", constants.sll);
 //            telemetry.addLine("im updating");
 
 
@@ -167,7 +170,10 @@ private Commands commands;
             }
 
             if (gamepad1.right_bumper) {
-
+                //Slows down robot to half speed
+            constants.DRIVE_SPEED = constants.DRIVE_SPEED * 0.5;
+            } else {
+                constants.DRIVE_SPEED = 1;
             }
 
 
@@ -192,30 +198,39 @@ private Commands commands;
             int hold = 1;
             if (constants.cll.isPressed()) {
                 constants.collectorDown = constants.c_tilt.getCurrentPosition();
-                constants.collectorUp = constants.collectorDown -880;
+                constants.collectorUp = constants.collectorDown  - 1080;
 //                constants.collectorDown = constants.collectorDown - constants.c_tilt.getCurrentPosition();
             }
 
+            if (constants.sll.isPressed()) {
+                constants.slideDown = constants.slide.getCurrentPosition();
+                constants.slideUp = constants.slideDown - 1140;
+                constants.highBasket = constants.slideDown - 3640;
+                constants.lowBasket = constants.slideDown - 1840;
+            }
             if  (gamepad2.right_stick_button) {
                 constants.slide.setTargetPosition(constants.slideDown);
                 constants.c_tilt.setTargetPosition(constants.collectorUp);
             }
 
             if (gamepad2.left_stick_button) {
+                //sets hanging position
                 constants.slide.setTargetPosition(-2750);
                 constants.c_tilt.setTargetPosition(constants.collectorDown);
             }
 
-            if (gamepad2.left_stick_y > 0.4) { //tilt slide manually
+            if (gamepad2.left_stick_y > 0.4) {
+                //run slide manually
                 constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() - 250);
             } else {
-//                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
             }
 
-            if (gamepad2.left_stick_y < -0.4) { //tilt slide manually
+            if (gamepad2.left_stick_y < -0.4) {
+                //run slide manually
                 constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() + 250);
             } else {
-//                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
             }
 //            if (gamepad2.left_stick_y < -0.2 || gamepad2.left_stick_y > 0.2) { //move slide up manually
 //                constants.hanger.setPower(-gamepad2.left_stick_y);
@@ -225,9 +240,10 @@ private Commands commands;
 //             collection sequence
 //            start by spinning collector then drop c_tilt when collector current is 400+ stop collector and raise arm
             if (gamepad2.a) {
+                //collect
                 constants.collecting = true;
-
             }
+
             if (constants.collecting) {
                 constants.collector.setPower(1.0);
                 constants.c_tilt.setTargetPosition(constants.collectorDown);
@@ -240,50 +256,76 @@ private Commands commands;
                 constants.collector.setPower(0.1);
                 constants.c_tilt.setTargetPosition(constants.collectorUp);
                 constants.collecting = false;
+//                constants.slide.setTargetPosition(constants.slideUp);
+                constants.slideMoveDown = true;
             }
 
             if (!constants.collecting && !constants.retracting) {
+                //stops collector
 //                constants.c_tilt.setTargetPosition(constants.collectorUp);
                 constants.collector.setPower(0);
+            }
+
+            if (constants.slideMoveDown && Math.abs(constants.c_tilt.getCurrentPosition() - constants.collectorUp) < 100) {
+
+//                constants.slide.setTargetPosition(constants.slideDown);
+                constants.slideMoveDown = false;
 
             }
 
             if (gamepad2.y) {
+                //puts c_tilt into stowed position
                 constants.collecting = false;
                 constants.c_tilt.setTargetPosition(constants.collectorUp);
                 constants.retracting = false;
             }
 
             if (gamepad2.x) {
+                //sets c_tilt into post hanging position
                 constants.collecting = false;
                 constants.c_tilt.setTargetPosition(constants.collectorMed);
                 constants.retracting = false;
             }
 
             if (gamepad2.b) {
+                //spits out incorrect samples
                 constants.collecting = false;
-                constants.c_tilt.setTargetPosition(constants.collectorDown);
-                constants.collector.setPower(-.25);
+                constants.c_tilt.setTargetPosition(constants.collectorMed);
+                constants.collector.setPower(-0.5);
+//                constants.c_tilt.setTargetPosition(constants.collectorUp);
             }
 
-            if (gamepad2.left_trigger > 0.5) {
-
+            if (gamepad2.left_trigger > 0.4 ) {
+                constants.holdSlideDown = true;
+                constants.slide.setTargetPosition(constants.slideDown);
+                if (Math.abs(constants.slide.getCurrentPosition() - constants.slideDown) < 100) {
+                constants.collector.setPower(-0.5);
+                }
+            } else {
+                constants.holdSlideDown = false;
+            }
+            if (!constants.collecting && !constants.delivery && !constants.retracting && !constants.holdSlideDown) {
+                constants.slide.setTargetPosition(constants.slideUp);
             }
 
-            if (gamepad2.right_stick_y < -0.4) { //
+            if (gamepad2.right_stick_y < -0.4) {
+                //manually run the c_tilt
                 constants.c_tilt.setTargetPosition(constants.c_tilt.getCurrentPosition() + 100);
             }
             if (gamepad2.right_stick_y > 0.4) {
+                //manually run the c_tilt
                 constants.c_tilt.setTargetPosition(constants.c_tilt.getCurrentPosition() - 100);
             }
 
-                if (gamepad2.right_bumper) { //score sequence for high basket
+                if (gamepad2.right_bumper) {
+                    //score sequence for high basket
 //                constants.slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                 score(constants.highBasket);
             }
 
 
             if (gamepad2.left_bumper) {
+                //score sequence for low basket
                 score(constants.lowBasket);
 //                commands.
             }
@@ -301,9 +343,9 @@ private Commands commands;
                 constants.retracting = true;
             }
             if (constants.retracting) {
-                constants.c_tilt.setTargetPosition(constants.collectorMed);
-                constants.slide.setTargetPosition(constants.slideDown);
-                if (Math.abs(constants.slide.getCurrentPosition() - constants.slideDown) < 100) {
+//                constants.c_tilt.setTargetPosition(constants.collectorMed);
+                constants.slide.setTargetPosition(constants.slideUp);
+                if (Math.abs(constants.slide.getCurrentPosition() - constants.slideUp) < 100) {
                     constants.c_tilt.setTargetPosition(constants.collectorUp);
                     constants.retracting = false;
                 }
@@ -335,11 +377,6 @@ private Commands commands;
 //                }
 //
 //
-
-
-
-
-
 
         }
     }
