@@ -177,25 +177,25 @@ public class Constants {
     public boolean          delivery            = false;
     boolean                 retracting          = false;
     boolean                 collecting          = false;
-    boolean                 slideMoveUp           = false;
-    boolean                 slideMoveDown = false;
+    boolean                 slideMoveUp         = false;
+    boolean                 slideMoveDown       = false;
+    boolean                 holdSlideDown       = false;
     public int              currentBasket       = 5000;
     int                     collectorDown       = 1100;
-    public int              collectorMed        = 200;
+    public int              collectorMed        = 500;
     public int              collectorUp         = 20;
-    public int              slideDown           = -20;
-    public int              slideUp             = 1500;
+    public int              slideDown           = -110;
+    public int              slideUp             = -1350;
     public int              highBasket          = -3750;
     int                     lowBasket           = -1950;
     int                     highBar             = 1000;
     int                     lowBar              = 250;
     int                     offset              = 200;
-    boolean                 START_LEFT;
 
     double                  TURN_SPEED;
     double                  DRIVE_SPEED;
     double                  collectorOverload   = 2250;
-    double                  c_tiltOverload      = 50000;
+    double                  c_tiltOverload      = 50001;
 
     double                  c_tiltPower         = 0.1;
 
@@ -232,7 +232,7 @@ public class Constants {
         leftFront   = controlFreaks.hardwareMap.get(DcMotorEx.class, "leftFront");  //Ch2
         rightFront  = controlFreaks.hardwareMap.get(DcMotorEx.class, "rightFront"); //Ch3
         slide       = controlFreaks.hardwareMap.get(DcMotorEx.class, "slide"); //Eh0
-        hanger      = controlFreaks.hardwareMap.get(DcMotorEx.class,"hanger"); //Eh1
+        hanger      = controlFreaks.hardwareMap.get(DcMotorEx.class, "hanger"); //Eh1
         c_tilt      = controlFreaks.hardwareMap.get(DcMotorEx.class, "c_tilt"); //Eh2
         collector   = controlFreaks.hardwareMap.get(DcMotorEx.class, "collector"); //Eh3
         hanger_tilt = controlFreaks.hardwareMap.get(Servo.class, "hanger_tilt"); //Ch4 (servo)
@@ -268,7 +268,7 @@ public class Constants {
         slide.setPower(1);
         slide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         if (r_6494) {
-            slide.setDirection(DcMotorSimple.Direction.FORWARD);
+            slide.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         collector.setDirection((DcMotorSimple.Direction.REVERSE));
 
