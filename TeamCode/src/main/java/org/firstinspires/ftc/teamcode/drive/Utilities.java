@@ -59,6 +59,8 @@ public class Utilities extends LinearOpMode {
             telemetry.addData("hanger current", constants.hanger.getCurrent(CurrentUnit.MILLIAMPS));
             telemetry.addData("gamepad2 left trigger ", gamepad2.left_trigger);
             telemetry.addData("gamepad2 right trigger ", gamepad2.right_trigger);
+            telemetry.addData("sll", constants.sll.isPressed());
+
 
             final int e_tiltPickUp = 0; //The tilt position for picking up a pixel 320 for 5618 and 6494
             final int e_tiltStowed = -475; //The tilt position for moving across the field -30

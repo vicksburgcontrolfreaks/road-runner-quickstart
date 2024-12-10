@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -181,12 +182,12 @@ public class Constants {
     boolean                 slideMoveDown       = false;
     boolean                 holdSlideDown       = false;
     public int              currentBasket       = 5000;
-    int                     collectorDown       = 1100;
-    public int              collectorMed        = 500;
+    public int              collectorDown       = 1100;
+    public int              collectorMed        = 400;
     public int              collectorUp         = 20;
     public int              slideDown           = -110;
     public int              slideUp             = -1350;
-    public int              highBasket          = -3750;
+    public int              highBasket          = -3825;
     int                     lowBasket           = -1950;
     int                     highBar             = 1000;
     int                     lowBar              = 250;
@@ -194,7 +195,7 @@ public class Constants {
 
     double                  TURN_SPEED;
     double                  DRIVE_SPEED;
-    double                  collectorOverload   = 2250;
+    public double           collectorOverload   = 2751;
     double                  c_tiltOverload      = 50001;
 
     double                  c_tiltPower         = 0.1;
@@ -237,7 +238,7 @@ public class Constants {
         collector   = controlFreaks.hardwareMap.get(DcMotorEx.class, "collector"); //Eh3
         hanger_tilt = controlFreaks.hardwareMap.get(Servo.class, "hanger_tilt"); //Ch4 (servo)
         bucket      = controlFreaks.hardwareMap.get(Servo.class, "bucket"); //Ch5 (servo)
-        sll         = controlFreaks.hardwareMap.get(TouchSensor.class, "sll"); //Ch1 (digital device)
+        sll         = controlFreaks.hardwareMap.get(TouchSensor .class, "sll"); //Ch1 (digital device)
         cll         = controlFreaks.hardwareMap.get(TouchSensor.class, "cll"); //Ch3 (digital device)
 
 

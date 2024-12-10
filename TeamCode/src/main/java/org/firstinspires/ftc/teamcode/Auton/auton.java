@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.drive.Constants;
 
@@ -200,7 +201,7 @@ public class auton extends LinearOpMode {
         constants.rightFront.setPower(0.5);
         constants.leftFront.setPower(0.5);
         constants.rightRear.setPower(0.5);
-        sleep(400);
+        sleep(575);
         // stop to score
         constants.leftRear.setPower(0);
         constants.rightFront.setPower(0);
@@ -221,7 +222,6 @@ public class auton extends LinearOpMode {
         sleep(800);
         constants.bucket.setPosition(1);//hold
         sleep(200);
-        constants.c_tilt.setTargetPosition(constants.collectorMed);
         constants.slide.setTargetPosition(constants.slideDown);
         while (Math.abs(constants.slide.getCurrentPosition() - constants.slideDown) > 100) {
             //wait
@@ -233,34 +233,69 @@ public class auton extends LinearOpMode {
         constants.rightFront.setPower(-0.5);
         constants.leftFront.setPower(-0.5);
         constants.rightRear.setPower(-0.5);
-        sleep(75);
+        sleep(275);
         //stafe
         constants.leftRear.setPower(-1);
         constants.rightFront.setPower(-1);
         constants.leftFront.setPower(1);
         constants.rightRear.setPower(1);
-        sleep(1350);
+        sleep(1400);
         //wait
         constants.leftRear.setPower(0);
         constants.rightFront.setPower(0);
         constants.leftFront.setPower(0);
         constants.rightRear.setPower(0);
         sleep(400);
-        //stafe to block
-        constants.leftRear.setPower(0.5);
-        constants.rightFront.setPower(0.5);
+        //drive back to submersible
+        constants.leftRear.setPower(-0.5);
+        constants.rightFront.setPower(-0.5);
         constants.leftFront.setPower(-0.5);
         constants.rightRear.setPower(-0.5);
-        sleep(750);
+        sleep(650);
+        //wait
+        constants.leftRear.setPower(0);
+        constants.rightFront.setPower(0);
+        constants.leftFront.setPower(0);
+        constants.rightRear.setPower(0);
+        sleep(400);
         //rotate
         constants.leftRear.setPower(0.5);
         constants.rightFront.setPower(-0.5);
         constants.leftFront.setPower(0.5);
         constants.rightRear.setPower(-0.5);
-        sleep(622);
+        sleep(1675);
+        //wait
+        constants.leftRear.setPower(0);
+        constants.rightFront.setPower(0);
+        constants.leftFront.setPower(0);
+        constants.rightRear.setPower(0);
+        sleep(400);
+        //back up
+        constants.leftRear.setPower(0.5);
+        constants.rightFront.setPower(0.5);
+        constants.leftFront.setPower(0.5);
+        constants.rightRear.setPower(0.5);
+        sleep(150);
+        //wait
+        constants.leftRear.setPower(0);
+        constants.rightFront.setPower(0);
+        constants.leftFront.setPower(0);
+        constants.rightRear.setPower(0);
+        sleep(400);
+        //slide up
+        constants.slide.setTargetPosition(constants.slideUp);
+        sleep(400);
+        //go down and collect
+        constants.c_tilt.setTargetPosition(constants.collectorDown);
+        constants.collector.setPower(1);
+        if (constants.collector.getCurrent(CurrentUnit.MILLIAMPS) > constants.collectorOverload) {// we have collected a sample
+            constants.collector.setPower(0.1);
+            constants.c_tilt.setTargetPosition(constants.collectorUp);
+        }
+        sleep(3000);
 
 
-        constants.c_tilt.setTargetPosition(250);
+
 
 
 //        driveStraight(DRIVE_SPEED, 24.0, 0.0);    // Drive Forward 24"

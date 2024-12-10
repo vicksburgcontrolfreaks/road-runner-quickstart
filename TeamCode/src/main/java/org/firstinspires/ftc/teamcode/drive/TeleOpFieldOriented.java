@@ -93,6 +93,7 @@ private Commands commands;
 //        constants.slide.setTargetPosition(constants.slideUp);
 
         while (opModeIsActive()) {
+
             // run until the end of the match (driver presses STOP)
 
             /* Adjust Joystick X/Y inputs by navX MXP yaw angle */
@@ -121,7 +122,7 @@ private Commands commands;
             telemetry.addData("retracting", constants.retracting);
             telemetry.addData("delivery", constants.delivery);
             telemetry.addData("sll", constants.sll);
-//            telemetry.addLine("im updating");
+            telemetry.addLine("im updating");
 
 
 
@@ -204,33 +205,36 @@ private Commands commands;
 
             if (constants.sll.isPressed()) {
                 constants.slideDown = constants.slide.getCurrentPosition();
-                constants.slideUp = constants.slideDown - 1140;
-                constants.highBasket = constants.slideDown - 3640;
+                constants.slideUp = constants.slideDown - 1240;
+                constants.highBasket = constants.slideDown - 3715;
                 constants.lowBasket = constants.slideDown - 1840;
+                constants.slide.setTargetPosition(constants.slide.getCurrentPosition());
+                constants.holdSlideDown = false;
+                constants.slide.setPower(1);
             }
             if  (gamepad2.right_stick_button) {
-                constants.slide.setTargetPosition(constants.slideDown);
-                constants.c_tilt.setTargetPosition(constants.collectorUp);
+                while (!constants.sll.isPressed()) {
+                    constants.slide.setPower(0.5);
+                    constants.holdSlideDown = true;
+                    constants.slide.setTargetPosition(constants.slide.getCurrentPosition() + 1000);
+
+                }
             }
 
-            if (gamepad2.left_stick_button) {
-                //sets hanging position
-                constants.slide.setTargetPosition(-2750);
-                constants.c_tilt.setTargetPosition(constants.collectorDown);
-            }
 
             if (gamepad2.left_stick_y > 0.4) {
-                //run slide manually
-                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() - 250);
-            } else {
-                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+                //run hanger manually down
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() - 100);
+//                constants.hanger.setPower(1);
             }
+//            if (gamepad2.left_stick_y < -0.3 && Math.abs(constants.hanger.getCurrentPosition()) > 4000) {
+//                constants.hanger.setPower(0);
+//            }
 
-            if (gamepad2.left_stick_y < -0.4) {
-                //run slide manually
-                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() + 250);
-            } else {
-                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition());
+                if (gamepad2.left_stick_y < -0.4 && Math.abs(constants.hanger.getCurrentPosition()) < 4000) {
+                //run hanger manually up
+                constants.hanger.setTargetPosition(constants.hanger.getCurrentPosition() + 100);
+
             }
 //            if (gamepad2.left_stick_y < -0.2 || gamepad2.left_stick_y > 0.2) { //move slide up manually
 //                constants.hanger.setPower(-gamepad2.left_stick_y);
@@ -285,13 +289,17 @@ private Commands commands;
                 constants.collecting = false;
                 constants.c_tilt.setTargetPosition(constants.collectorMed);
                 constants.retracting = false;
+                constants.hanger_tilt.setPosition(0);
+                sleep(700);
+                constants.hanger_tilt.setPosition(1);
+
             }
 
             if (gamepad2.b) {
                 //spits out incorrect samples
                 constants.collecting = false;
                 constants.c_tilt.setTargetPosition(constants.collectorMed);
-                constants.collector.setPower(-0.5);
+                constants.collector.setPower(-1);
 //                constants.c_tilt.setTargetPosition(constants.collectorUp);
             }
 
@@ -353,12 +361,11 @@ private Commands commands;
             if (gamepad2.dpad_down) {
                 constants.slide.setTargetPosition(constants.slide.getCurrentPosition() + 40);
 
-                constants.slideDown = constants.slide.getCurrentPosition();
             }
             if (gamepad2.dpad_up) {
                 constants.slide.setTargetPosition(constants.slide.getCurrentPosition() - 40);
 
-                constants.slideDown = constants.slide.getCurrentPosition();
+
             }
             if (gamepad2.dpad_right) {
                 constants.hanger_tilt.setPosition(1);
@@ -366,7 +373,6 @@ private Commands commands;
             if (gamepad2.dpad_left) {
                 constants.hanger_tilt.setPosition(0);
             }
-
 
 //            if (gamepad2.left_stick_y > 0.2) { //
 //
